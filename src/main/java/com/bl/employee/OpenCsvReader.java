@@ -1,14 +1,17 @@
 package com.bl.employee;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Iterator;
 import java.util.List;
 
+import com.bl.employee.model.EmpModel;
 import com.opencsv.CSVReader;
+import com.opencsv.bean.CsvToBean;
+import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.exceptions.CsvException;
 import com.opencsv.exceptions.CsvValidationException;
 
@@ -17,7 +20,8 @@ public class OpenCsvReader {
 	public static String CSV_FILE_PATH = "D:\\Darpan\\LFP_112\\empData.csv";
 
 	public void readNext() {
-		System.out.println("--------------op with readNext-------------");
+		System.out.println(
+				"--------------op with readNext-------------");
 		Path csvPath = Paths.get(CSV_FILE_PATH);
 		try {
 			Reader reader = Files
@@ -45,6 +49,7 @@ public class OpenCsvReader {
 				e.printStackTrace();
 			}
 			csvReader.close();
+			reader.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -80,6 +85,81 @@ public class OpenCsvReader {
 				e.printStackTrace();
 			}
 			csvReader.close();
+			reader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public void readBeanModel() {
+
+		try {
+			Reader reader = Files.newBufferedReader(
+					Paths.get(CSV_FILE_PATH));
+
+			CSVReader csvReader = new CSVReader(reader);
+
+			CsvToBean<EmpModel> csvToBean = new CsvToBeanBuilder<EmpModel>(
+					csvReader).withType(EmpModel.class)
+							.withIgnoreLeadingWhiteSpace(
+									true)
+							.build();
+
+			Iterator<EmpModel> empItr = csvToBean
+					.iterator();
+
+			while (empItr.hasNext()) {
+				EmpModel empModel = empItr.next();
+				System.out
+						.println("ID : " + empModel.EmpId);
+				System.out.println(
+						"Name : " + empModel.EmpName);
+				System.out.println(
+						"Salary : " + empModel.Salary);
+				System.out.println("Designation : "
+						+ empModel.Designation);
+				System.out.println(
+						"--------------------------------");
+			}
+			csvReader.close();
+			reader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public void readByParse() {
+
+		try {
+			Reader reader = Files.newBufferedReader(
+					Paths.get(CSV_FILE_PATH));
+
+			CSVReader csvReader = new CSVReader(reader);
+
+			CsvToBean<EmpModel> csvToBean = new CsvToBeanBuilder<EmpModel>(
+					csvReader).withType(EmpModel.class)
+							.withIgnoreLeadingWhiteSpace(
+									true)
+							.build();
+
+			List<EmpModel> empList = csvToBean.parse();
+
+			empList.forEach(empModel -> {
+				System.out
+						.println("ID : " + empModel.EmpId);
+				System.out.println(
+						"Name : " + empModel.EmpName);
+				System.out.println(
+						"Salary : " + empModel.Salary);
+				System.out.println("Designation : "
+						+ empModel.Designation);
+				System.out.println(
+						"--------------------------------");
+			});
+			csvReader.close();
+			reader.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -90,7 +170,7 @@ public class OpenCsvReader {
 
 		OpenCsvReader csvReader = new OpenCsvReader();
 
-		csvReader.readAll();
+		csvReader.readByParse();
 
 	}
 }
